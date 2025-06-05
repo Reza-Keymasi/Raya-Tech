@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { ChangeEvent, useState } from "react";
 
 import Table from "@/components/table/Table";
@@ -22,6 +23,7 @@ type UserTable = Pick<
 
 export default function UsersTable() {
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const router = useRouter();
 
   const { data: users } = useGetUsers();
 
@@ -35,21 +37,25 @@ export default function UsersTable() {
     setSearchQuery(e.target.value);
   }
 
+  function handleDetailsPage(user: UserTable) {
+    router.push(`/users/${user.id}`);
+  }
+
   return (
     <div className="mx-auto mt-10 px-4 w-11/12">
       <div className="py-3 w-1/4">
         <Input
           name="Search Info"
-          type="text"
           onChange={handleChange}
+          type="text"
           value={searchQuery}
         />
       </div>
       <Table
-        data={filteredData || []}
         columns={columns}
-        onDetails={() => {}}
+        data={filteredData || []}
         onDelete={() => {}}
+        onDetails={handleDetailsPage}
       />
     </div>
   );
