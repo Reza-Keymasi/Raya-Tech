@@ -1,4 +1,4 @@
-import React, { ChangeEvent, ComponentPropsWithoutRef } from "react";
+import { ChangeEvent, ComponentPropsWithoutRef } from "react";
 
 type InputProps = {
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
@@ -6,18 +6,17 @@ type InputProps = {
 
 export default function Input({ onChange, ...props }: InputProps) {
   return (
-    <div className="relative py-5">
+    <div className="relative">
       <input
+        className="peer h-12 w-full bg-transparent text-white px-2 rounded-lg border border-gray-300/60 focus:border-indigo-200 focus:outline-0 appearance-none"
         id={props.name}
         onChange={onChange}
-        className="peer block bg-transparent text-white px-1 border-b border-b-gray-300/60 focus:border-b-indigo-200 appearance-none focus:outline-0"
-        value={props.value}
         placeholder=" "
         {...props}
       />
       <label
+        className="flex items-center absolute top-3 left-2 text-sm transition-all duration-150 ease-in peer-focus:top-0.5 peer-focus:text-indigo-200 peer-focus:text-xs peer-[:not(:placeholder-shown)]:top-0.5 peer-[:not(:placeholder-shown)]:text-xs"
         htmlFor={props.name}
-        className="peer-focus:top-0 peer-focus:text-indigo-200 peer-[:not(:placeholder-shown)]:top-0 flex items-center absolute top-[10px] left-1 transition-all duration-150 ease-in"
       >
         {props.name}
       </label>
