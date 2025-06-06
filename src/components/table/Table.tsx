@@ -51,7 +51,7 @@ export default function Table<T>({
                 </td>
               ))}
               {(onDetails || onDelete) && (
-                <td className="px-4 py-2 space-x-2">
+                <td className="flex px-4 py-2 space-x-2">
                   {onDelete && (
                     <Button
                       className="py-1 px-3"
