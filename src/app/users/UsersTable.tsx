@@ -7,6 +7,7 @@ import Table from "@/components/table/Table";
 import { IUser } from "@/types/IUser";
 import { useGetUsers } from "@/lib/react-query/userQueries";
 import Input from "@/components/input/Input";
+import CreateUserForm from "./modals/CreateUserFormModal";
 
 const columns: { header: string; accessor: keyof UserTable }[] = [
   { header: "#", accessor: "id" },
@@ -43,13 +44,16 @@ export default function UsersTable() {
 
   return (
     <div className="mx-auto mt-10 px-4 w-11/12">
-      <div className="py-3 w-1/4">
-        <Input
-          name="Search Info"
-          onChange={handleChange}
-          type="text"
-          value={searchQuery}
-        />
+      <div className="flex justify-between">
+        <CreateUserForm />
+        <div className="pb-3 w-1/4">
+          <Input
+            label="Search Info"
+            onChange={handleChange}
+            type="text"
+            value={searchQuery}
+          />
+        </div>
       </div>
       <Table
         columns={columns}
