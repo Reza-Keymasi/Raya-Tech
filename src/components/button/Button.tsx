@@ -3,30 +3,32 @@ import React, { ComponentPropsWithoutRef } from "react";
 import { ButtonCustomStyles } from "./ButtonCustomStyles";
 
 type ButtonProps = {
-  variant?: "primary" | "secondary" | "success" | "danger" | "borderGray";
   children: React.ReactNode;
   className?: string;
-  disabled?: boolean;
+  isDisabled?: boolean;
+  variant?: "primary" | "secondary" | "success" | "danger";
 } & ComponentPropsWithoutRef<"button">;
 
 export default function Button({
-  variant = "primary",
   children,
   className = "",
-  disabled = false,
+  isDisabled = false,
+  variant = "primary",
   ...props
 }: ButtonProps) {
   const { btnVariants } = ButtonCustomStyles({
     variant,
   });
 
-  const disabledStyles = disabled ? "opacity-50 cursor-not-allowed" : "";
+  const disabledStyles = isDisabled
+    ? "opacity-50 cursor-not-allowed"
+    : "cursor-pointer";
 
   const baseStyles = `rounded-lg shadow transition-all duration-200 py-2 px-4 ${btnVariants} ${disabledStyles}`;
 
   return (
     <button
-      disabled={disabled}
+      disabled={isDisabled}
       className={`${baseStyles} ${className}`}
       {...props}
     >
