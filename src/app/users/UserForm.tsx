@@ -2,7 +2,17 @@ import { ChangeEvent, FocusEvent, useEffect } from "react";
 
 import Button from "@/components/button/Button";
 import Input from "@/components/input/Input";
+import Spinner from "@/components/spinner/Spinner";
 import { createUserFormStore } from "@/lib/stores/userFormStore";
+import { useCreateUser, useUpdateUser } from "@/lib/react-query/userQueries";
+import { IUser } from "@/types/IUser";
+
+interface IUserFormProps {
+  initialData?: IUser;
+  mode: "create" | "update";
+  onCloseModal: () => void;
+  onSubmit?: (updatedUser: IUser) => void;
+}
 
 const fieldsPerStep: Record<number, string[]> = {
   0: ["name", "username", "email", "phone"],
@@ -29,10 +39,14 @@ const fieldToPathMap: Record<string, string> = {
   companyName: "company.name",
 };
 
-export default function UserForm() {
+export default function UserForm({
+  initialData,
+  mode,
+  onCloseModal,
+  onSubmit,
+}: IUserFormProps) {
   const {
     data: user,
-    mode,
     errors,
     step,
     setStep,
@@ -43,14 +57,45 @@ export default function UserForm() {
     validateField,
   } = createUserFormStore();
 
+  const {
+    mutate: createUserMutation,
+    isPending: isPendingCreate,
+    isError: IsErrorCreating,
+    isSuccess,
+    error: creatingError,
+    data: create,
+  } = useCreateUser();
+
+  const {
+    mutate: updateUserMutation,
+    isPending: isPendingUpdate,
+    isError: isErrorUpdating,
+    error: updatingError,
+  } = useUpdateUser();
+
   useEffect(() => {
     reset();
     setStep(0);
   }, []);
 
+  useEffect(() => {
+    const { setAll, reset, setStep, setMode } = createUserFormStore.getState();
+
+    setMode(mode);
+
+    if (mode === "update" && initialData) {
+      setAll(initialData);
+    }
+
+    if (mode === "create") {
+      reset();
+    }
+
+    setStep(0);
+  }, [mode, initialData?.id]);
+
   function handleChange(e: ChangeEvent<HTMLInputElement>) {
     const inputName = e.target.name;
-    console.log(inputName);
     const path = fieldToPathMap[inputName];
     setField(path, e.target.value);
   }
@@ -72,9 +117,8 @@ export default function UserForm() {
         validateField(path);
       }
     });
+
     const hasError = fields.some((field) => errors[field]);
-    console.log(hasError);
-    console.log(errors);
 
     if (!hasError) nextStep();
   }
@@ -88,6 +132,32 @@ export default function UserForm() {
   function handleResetForm() {
     reset();
     setStep(0);
+  }
+
+  function handleSubmitForm() {
+    const { data: user } = createUserFormStore.getState();
+    try {
+      if (mode === "create") {
+        if (IsErrorCreating)
+          alert(`Error occured when creating user: ${creatingError}`);
+        createUserMutation(user, {
+          onSuccess: () => {
+            onCloseModal?.();
+          },
+        });
+      } else if (mode === "update") {
+        if (isErrorUpdating)
+          alert(`Error occured when creating user: ${updatingError}`);
+        updateUserMutation(user, {
+          onSuccess: (updatedUser) => {
+            onSubmit?.(updatedUser);
+            onCloseModal?.();
+          },
+        });
+      }
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   function generalInfoForm() {
@@ -233,36 +303,46 @@ export default function UserForm() {
 
   return (
     <div className="w-[500px] space-y-3 p-10">
-      {step === 0 && generalInfoForm()}
-      {step === 1 && addressForm()}
-      {step === 2 && companyForm()}
-
-      <div className="flex justify-between my-10">
-        <div className="flex space-x-3 w-[250px]">
-          <Button
-            className=""
-            isDisabled={step === 0}
-            onClick={prevStep}
-            variant="primary"
-          >
-            Prev
-          </Button>
-          {step < 2 ? (
-            <Button
-              variant="primary"
-              isDisabled={disabledBtn}
-              onClick={handleNextStep}
-            >
-              Next
-            </Button>
-          ) : (
-            <Button variant="success">Save</Button>
-          )}
+      {isPendingCreate || isPendingUpdate ? (
+        <div className="absolute top-1/2 left-1/2">
+          <Spinner />
         </div>
-        <Button variant="secondary" onClick={handleResetForm}>
-          Cancel
-        </Button>
-      </div>
+      ) : (
+        <>
+          {step === 0 && generalInfoForm()}
+          {step === 1 && addressForm()}
+          {step === 2 && companyForm()}
+
+          <div className="flex justify-between my-10">
+            <div className="flex space-x-3 w-[250px]">
+              <Button
+                className=""
+                isDisabled={step === 0}
+                onClick={prevStep}
+                variant="primary"
+              >
+                Prev
+              </Button>
+              {step < 2 ? (
+                <Button
+                  variant="primary"
+                  isDisabled={disabledBtn}
+                  onClick={handleNextStep}
+                >
+                  Next
+                </Button>
+              ) : (
+                <Button variant="success" onClick={handleSubmitForm}>
+                  Save
+                </Button>
+              )}
+            </div>
+            <Button variant="secondary" onClick={handleResetForm}>
+              Cancel
+            </Button>
+          </div>
+        </>
+      )}
     </div>
   );
 }
