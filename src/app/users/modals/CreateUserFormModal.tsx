@@ -6,7 +6,7 @@ import Button from "@/components/button/Button";
 import Modal from "@/components/modal/Modal";
 import UserForm from "../UserForm";
 
-export default function CreateUserForm() {
+export default function CreateUserFormModal() {
   const [isOpenModal, setIsOpenModal] = useState(false);
 
   function handlecloseModal() {
@@ -23,7 +23,7 @@ export default function CreateUserForm() {
         isOpen={isOpenModal}
         onClose={handlecloseModal}
       >
-        <UserForm />
+        <UserForm mode="create" onCloseModal={handlecloseModal} />
       </Modal>
     </>
   );
