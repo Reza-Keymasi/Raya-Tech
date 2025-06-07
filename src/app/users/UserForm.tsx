@@ -1,7 +1,9 @@
 import { ChangeEvent, FocusEvent, useEffect } from "react";
 
 import Button from "@/components/button/Button";
-import Input from "@/components/input/Input";
+import GeneralInfoForm from "./step-forms/GeneralInfoForm";
+import AddressForm from "./step-forms/AddressForm";
+import CompanyForm from "./step-forms/CompanyForm";
 import Spinner from "@/components/spinner/Spinner";
 import { createUserFormStore } from "@/lib/stores/userFormStore";
 import { useCreateUser, useUpdateUser } from "@/lib/react-query/userQueries";
@@ -160,147 +162,6 @@ export default function UserForm({
     }
   }
 
-  function generalInfoForm() {
-    return (
-      <>
-        <h2>General Info</h2>
-        <div className="flex space-x-3">
-          <Input
-            error={errors.name}
-            name="name"
-            label="name"
-            onBlur={handleBlur}
-            onChange={handleChange}
-            value={user.name}
-          />
-
-          <Input
-            error={errors.username}
-            name="username"
-            label="username"
-            onBlur={handleBlur}
-            onChange={handleChange}
-            value={user.username}
-          />
-        </div>
-        <div className="flex space-x-3">
-          <Input
-            error={errors.email}
-            name="email"
-            label="email"
-            onBlur={handleBlur}
-            onChange={handleChange}
-            value={user.email}
-          />
-          <Input
-            error={errors.phone}
-            name="phone"
-            label="phone number"
-            onBlur={handleBlur}
-            onChange={handleChange}
-            value={user.phone}
-          />
-        </div>
-        <div>
-          <Input
-            name="website"
-            label="website"
-            onChange={handleChange}
-            value={user.website}
-          />
-        </div>
-      </>
-    );
-  }
-
-  function addressForm() {
-    return (
-      <>
-        <h2>Address</h2>
-        <div className="flex space-x-3">
-          <Input
-            error={errors["address.city"]}
-            name="city"
-            label="city"
-            onBlur={handleBlur}
-            onChange={handleChange}
-            value={user.address.city}
-          />
-
-          <Input
-            error={errors["address.street"]}
-            name="street"
-            label="street"
-            onBlur={handleBlur}
-            onChange={handleChange}
-            value={user.address.street}
-          />
-        </div>
-        <div className="flex space-x-3">
-          <Input
-            error={errors["address.suite"]}
-            name="suite"
-            label="suite"
-            onBlur={handleBlur}
-            onChange={handleChange}
-            value={user.address.suite}
-          />
-          <Input
-            name="zipcode"
-            label="zipcode"
-            onChange={handleChange}
-            value={user.address.zipcode}
-          />
-        </div>
-        <div className="flex space-x-3">
-          <Input
-            name="lat"
-            label="lat"
-            onChange={handleChange}
-            value={user.address.geo.lat}
-          />
-          <Input
-            name="lng"
-            label="lng"
-            onChange={handleChange}
-            value={user.address.geo.lng}
-          />
-        </div>
-      </>
-    );
-  }
-
-  function companyForm() {
-    return (
-      <>
-        <h2>Company</h2>
-        <div className="flex space-x-3">
-          <Input
-            name="companyName"
-            label="company name"
-            onChange={handleChange}
-            value={user.company.name}
-          />
-
-          <Input
-            name="bs"
-            label="bs"
-            onChange={handleChange}
-            value={user.company.bs}
-          />
-        </div>
-        <div className="flex space-x-3">
-          <Input
-            name="catchPhrase"
-            label="catch phrase"
-            onChange={handleChange}
-            value={user.company.catchPhrase}
-          />
-        </div>
-      </>
-    );
-  }
-
   return (
     <div className="w-[500px] space-y-3 p-10">
       {isPendingCreate || isPendingUpdate ? (
@@ -309,9 +170,23 @@ export default function UserForm({
         </div>
       ) : (
         <>
-          {step === 0 && generalInfoForm()}
-          {step === 1 && addressForm()}
-          {step === 2 && companyForm()}
+          {step === 0 && (
+            <GeneralInfoForm
+              errors={errors}
+              onBlur={handleBlur}
+              onChange={handleChange}
+              user={user}
+            />
+          )}
+          {step === 1 && (
+            <AddressForm
+              errors={errors}
+              onBlur={handleBlur}
+              onChange={handleChange}
+              user={user}
+            />
+          )}
+          {step === 2 && <CompanyForm onChange={handleChange} user={user} />}
 
           <div className="flex justify-between my-10">
             <div className="flex space-x-3 w-[250px]">
