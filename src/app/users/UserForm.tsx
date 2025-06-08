@@ -63,7 +63,6 @@ export default function UserForm({
     mutate: createUserMutation,
     isPending: isPendingCreate,
     isError: IsErrorCreating,
-    isSuccess,
     error: creatingError,
     data: create,
   } = useCreateUser();
