@@ -4,11 +4,10 @@ import { useRouter } from "next/navigation";
 import { ChangeEvent, useState } from "react";
 
 import Table from "@/components/table/Table";
-import { IUser } from "@/types/IUser";
-import { useDeleteUser, useGetUsers } from "@/lib/react-query/userQueries";
 import Input from "@/components/input/Input";
 import CreateUserFormModal from "./modals/CreateUserFormModal";
-import { QueryClient } from "@tanstack/react-query";
+import { IUser } from "@/types/IUser";
+import { useDeleteUser, useGetUsers } from "@/lib/react-query/userQueries";
 
 const columns: { header: string; accessor: keyof UserTable }[] = [
   { header: "#", accessor: "id" },
