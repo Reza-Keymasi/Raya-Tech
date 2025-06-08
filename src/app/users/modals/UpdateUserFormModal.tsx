@@ -7,25 +7,18 @@ import Modal from "@/components/modal/Modal";
 import UserForm from "../UserForm";
 import { IUser } from "@/types/IUser";
 import { useUpdateUser } from "@/lib/react-query/userQueries";
-import { createUserFormStore } from "@/lib/stores/userFormStore";
 
 export default function UpdateUserFormModal({ user }: { user: IUser }) {
   const [isOpenModal, setIsOpenModal] = useState(false);
 
   const updateUserMutation = useUpdateUser();
-  const setAll = createUserFormStore((state) => state.setAll);
 
   function handlecloseModal() {
     setIsOpenModal(false);
   }
 
   function handleUpdate(updatedUser: IUser) {
-    updateUserMutation.mutate(updatedUser, {
-      onSuccess: (data) => {
-        setAll(data);
-        handlecloseModal();
-      },
-    });
+    updateUserMutation.mutate(updatedUser);
   }
 
   return (

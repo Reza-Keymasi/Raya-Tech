@@ -52,3 +52,13 @@ export async function updateUser(updatedUser: IUser): Promise<IUser> {
 
   return response.json();
 }
+
+export async function deleteUser(id: number): Promise<void> {
+  const response = await fetch(`${BASE_URL}/users/${id}`, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to delete user");
+  }
+}

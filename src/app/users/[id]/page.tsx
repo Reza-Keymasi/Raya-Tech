@@ -1,27 +1,16 @@
 "use client";
 
-import { useEffect } from "react";
 import { useParams } from "next/navigation";
 
-import { useGetUser } from "@/lib/react-query/userQueries";
 import Spinner from "@/components/spinner/Spinner";
 import UpdateUserFormModal from "../modals/UpdateUserFormModal";
-import { createUserFormStore } from "@/lib/stores/userFormStore";
+import { useGetUser } from "@/lib/react-query/userQueries";
 
 export default function UserDetails() {
   const params = useParams();
   const { id } = params;
 
   const { data: user, isPending, isError } = useGetUser(Number(id));
-
-  const formData = createUserFormStore((state) => state.data);
-  const setAll = createUserFormStore((state) => state.setAll);
-
-  useEffect(() => {
-    if (user) {
-      setAll(user);
-    }
-  }, [user, setAll]);
 
   if (isPending)
     return (
@@ -30,23 +19,36 @@ export default function UserDetails() {
       </div>
     );
 
-  if (isError) return alert("Faild to fetch user");
+  if (!user) {
+    return (
+      <div className="absolute top-[45%] left-[45%] text-2xl font-bold">
+        User not found
+      </div>
+    );
+  }
 
-  const { geo, ...addressWithoutGeo } = formData.address;
+  if (isError)
+    return (
+      <div className="absolute top-[45%] left-[45%] text-2xl font-bold">
+        Failed to fetch user details. Please try again
+      </div>
+    );
+
+  const { geo, ...addressWithoutGeo } = user.address;
   const flatAddress = {
     ...addressWithoutGeo,
     ...geo,
   };
 
   return (
-    <div>
-      <div className="w-11/12 sm:w-10/12 xl:w-8/12 mx-auto mt-10 border border-sky-300 rounded-lg flex flex-col gap-6 p-4 sm:p-6">
+    <div className="pt-10">
+      <div className="w-11/12 sm:w-10/12 xl:w-8/12 mx-auto border border-sky-300 rounded-lg flex flex-col gap-6 p-4 sm:p-6">
         <div className="flex flex-col md:flex-row md:justify-between gap-6">
           <div>
             <h3 className="text-lg sm:text-xl font-bold border-b border-gray-100">
               General Info
             </h3>
-            {Object.entries(formData).map(([key, value]) =>
+            {Object.entries(user).map(([key, value]) =>
               typeof value !== "object" && key !== "id" ? (
                 <p
                   key={key}
@@ -93,7 +95,7 @@ export default function UserDetails() {
             <h3 className="text-lg sm:text-xl font-bold border-b border-gray-100">
               Company
             </h3>
-            {Object.entries(formData.company).map(([key, value]) =>
+            {Object.entries(user.company).map(([key, value]) =>
               typeof value !== "object" && key !== "id" ? (
                 <p
                   key={key}
@@ -109,7 +111,7 @@ export default function UserDetails() {
           </div>
         </div>
         <div className="flex flex-col sm:flex-row justify-center sm:justify-end items-center gap-4">
-          <UpdateUserFormModal user={formData} />
+          <UpdateUserFormModal user={user} />
         </div>
       </div>
     </div>

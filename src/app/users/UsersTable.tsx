@@ -5,9 +5,10 @@ import { ChangeEvent, useState } from "react";
 
 import Table from "@/components/table/Table";
 import { IUser } from "@/types/IUser";
-import { useGetUsers } from "@/lib/react-query/userQueries";
+import { useDeleteUser, useGetUsers } from "@/lib/react-query/userQueries";
 import Input from "@/components/input/Input";
 import CreateUserFormModal from "./modals/CreateUserFormModal";
+import { QueryClient } from "@tanstack/react-query";
 
 const columns: { header: string; accessor: keyof UserTable }[] = [
   { header: "#", accessor: "id" },
@@ -27,6 +28,7 @@ export default function UsersTable() {
   const router = useRouter();
 
   const { data: users } = useGetUsers();
+  const { mutate: deleteUser } = useDeleteUser();
 
   const filteredData = users?.filter((user) =>
     Object.entries(user).some((value) =>
@@ -42,8 +44,12 @@ export default function UsersTable() {
     router.push(`/users/${user.id}`);
   }
 
+  function handleDeleteUser(user: UserTable) {
+    deleteUser(user.id);
+  }
+
   return (
-    <div className="mx-auto mt-10 px-4 w-11/12">
+    <div className="mx-auto pt-10 px-4 w-11/12">
       <div className="flex justify-between">
         <CreateUserFormModal />
         <div className="pb-3 w-1/4">
@@ -58,7 +64,7 @@ export default function UsersTable() {
       <Table
         columns={columns}
         data={filteredData || []}
-        onDelete={() => {}}
+        onDelete={handleDeleteUser}
         onDetails={handleDetailsPage}
       />
     </div>

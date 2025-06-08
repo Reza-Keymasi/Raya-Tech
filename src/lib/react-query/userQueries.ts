@@ -5,6 +5,7 @@ import {
   fetchUsers,
   createUser,
   updateUser,
+  deleteUser,
 } from "@/services/userApi";
 import { IUser } from "@/types/IUser";
 
@@ -41,11 +42,29 @@ export function useUpdateUser() {
 
   return useMutation<IUser, Error, IUser>({
     mutationFn: (updatedUser) => updateUser(updatedUser),
-    onSuccess: (updatedUser) => {
-      // ✅ Trigger re-fetch of that specific user
-      qc.invalidateQueries({
-        queryKey: ["user", updatedUser.id],
+    onSuccess: (updatedUser: IUser) => {
+      qc.setQueryData<IUser>(["user", updatedUser.id], updatedUser);
+
+      qc.setQueryData<IUser[]>(["users"], (prevUsers) => {
+        if (!prevUsers) return [];
+        return prevUsers.map((user) =>
+          user.id === updatedUser.id ? updatedUser : user
+        );
       });
+    },
+  });
+}
+
+export function useDeleteUser() {
+  const qc = useQueryClient();
+
+  return useMutation<void, Error, number>({
+    mutationFn: (id: number) => deleteUser(id),
+    onSuccess: (_data: void, idToDelete: number) => {
+      qc.removeQueries({ queryKey: ["user", idToDelete] });
+      qc.setQueryData<IUser[]>(["users"], (prevUsers) =>
+        prevUsers?.filter((user) => user.id !== idToDelete)
+      );
     },
   });
 }
