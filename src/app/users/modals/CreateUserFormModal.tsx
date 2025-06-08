@@ -19,7 +19,7 @@ export default function CreateUserFormModal() {
         Create User
       </Button>
       <Modal
-        className="w-[500px] h-[400px]"
+        className="w-[400px] sm:w-[500px] h-[400px]"
         isOpen={isOpenModal}
         onClose={handlecloseModal}
       >

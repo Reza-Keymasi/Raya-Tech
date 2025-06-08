@@ -23,11 +23,14 @@ export default function UpdateUserFormModal({ user }: { user: IUser }) {
 
   return (
     <>
-      <Button className="w-[150px] h-12" onClick={() => setIsOpenModal(true)}>
+      <Button
+        className="w-full md:w-[150px] h-12"
+        onClick={() => setIsOpenModal(true)}
+      >
         Update User
       </Button>
       <Modal
-        className="w-[500px] h-[400px]"
+        className="w-[400px] sm:w-[500px] h-[400px]"
         isOpen={isOpenModal}
         onClose={handlecloseModal}
       >

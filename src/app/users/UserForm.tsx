@@ -163,35 +163,37 @@ export default function UserForm({
   }
 
   return (
-    <div className="w-[500px] space-y-3 p-10">
+    <div className="flex flex-col h-full w-[400px] sm:w-[500px] space-y-3 px-5 py-10 sm:p-8">
       {isPendingCreate || isPendingUpdate ? (
         <div className="absolute top-1/2 left-1/2">
           <Spinner />
         </div>
       ) : (
         <>
-          {step === 0 && (
-            <GeneralInfoForm
-              errors={errors}
-              onBlur={handleBlur}
-              onChange={handleChange}
-              user={user}
-            />
-          )}
-          {step === 1 && (
-            <AddressForm
-              errors={errors}
-              onBlur={handleBlur}
-              onChange={handleChange}
-              user={user}
-            />
-          )}
-          {step === 2 && <CompanyForm onChange={handleChange} user={user} />}
+          <div className="flex-1 overflow-auto space-y-3">
+            {step === 0 && (
+              <GeneralInfoForm
+                errors={errors}
+                onBlur={handleBlur}
+                onChange={handleChange}
+                user={user}
+              />
+            )}
+            {step === 1 && (
+              <AddressForm
+                errors={errors}
+                onBlur={handleBlur}
+                onChange={handleChange}
+                user={user}
+              />
+            )}
+            {step === 2 && <CompanyForm onChange={handleChange} user={user} />}
+          </div>
 
-          <div className="flex justify-between my-10">
+          <div className="flex justify-between ">
             <div className="flex space-x-3 w-[250px]">
               <Button
-                className=""
+                className="w-1/2"
                 isDisabled={step === 0}
                 onClick={prevStep}
                 variant="primary"
@@ -200,6 +202,7 @@ export default function UserForm({
               </Button>
               {step < 2 ? (
                 <Button
+                  className="w-1/2"
                   variant="primary"
                   isDisabled={disabledBtn}
                   onClick={handleNextStep}
@@ -212,7 +215,11 @@ export default function UserForm({
                 </Button>
               )}
             </div>
-            <Button variant="secondary" onClick={handleResetForm}>
+            <Button
+              className="w-1/4"
+              variant="secondary"
+              onClick={handleResetForm}
+            >
               Cancel
             </Button>
           </div>
